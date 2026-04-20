@@ -66,7 +66,6 @@ export const deletePost = async (postId: string) => {
   return response.data;
 };
 
-// ── Answers ──────────────────────────────────────────────────────────────
 
 export const createAnswer = async (postId: string, content: string) => {
   const response = await axiosWithCredentials.post(`${PAZZA_API}/posts/${postId}/answers`, { content });
@@ -78,7 +77,6 @@ export const deleteAnswer = async (answerId: string) => {
   return response.data;
 };
 
-// ── Followups ─────────────────────────────────────────────────────────────
 
 export const createFollowup = async (postId: string, content: string) => {
   const response = await axiosWithCredentials.post(`${PAZZA_API}/posts/${postId}/followups`, { content });
@@ -94,8 +92,6 @@ export const toggleFollowupResolved = async (followupId: string) => {
   const response = await axiosWithCredentials.put(`${PAZZA_API}/followups/${followupId}/resolve`);
   return response.data;
 };
-
-// ── Replies ───────────────────────────────────────────────────────────────
 
 export const addReply = async (followupId: string, content: string) => {
   const response = await axiosWithCredentials.post(`${PAZZA_API}/followups/${followupId}/replies`, { content });

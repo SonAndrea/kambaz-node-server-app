@@ -16,18 +16,25 @@ mongoose.connect(CONNECTION_STRING);
 
 const app = express();
 
-// Detect environment by checking for a production-only env var.
-// Do NOT rely on SERVER_ENV because it is often unset, which makes
-// the check default to the wrong branch.
 const isProduction = process.env.NODE_ENV === "production";
+
+const allowedOrigins = [
+  process.env.CLIENT_URL,
+  "http://localhost:3000",
+].filter(Boolean);
 
 app.use(cors({
   credentials: true,
-  origin: process.env.CLIENT_URL || "http://localhost:3000",
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error(`CORS blocked: ${origin}`));
+    }
+  },
 }));
 
 if (isProduction) {
-  // Required so Express sees the real protocol when behind a proxy (Render, Heroku, etc.)
   app.set("trust proxy", 1);
 }
 
@@ -40,9 +47,6 @@ const sessionOptions = {
         sameSite: "none",
         httpOnly: true,
         secure: true,
-        // NOTE: do NOT set domain — letting the browser infer it from the
-        // response host is more reliable. An explicit domain causes the cookie
-        // to be silently dropped if there is any mismatch with the request origin.
         maxAge: 7 * 24 * 60 * 60 * 1000,
       }
     : {
